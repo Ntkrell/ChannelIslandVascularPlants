@@ -61,6 +61,9 @@ for (x in vascular_plants$id){
   query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
   df <- idig_search_records(rq=query,fields = c('family','genus','specificepithet','stateprovince','county','locality','uuid'))
   
+  #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
+  #df <- c(idig_count_records(rq=query),g,sE)
+  
   #create one giant file
   write.table(df, file="all.tsv", sep="\t", append = TRUE , row.names = F, col.names = F)
 }

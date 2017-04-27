@@ -2,28 +2,28 @@
 #list of genus, species names query idigbio
 #limit by lat/long bounding box
 
-#Anacapa Island, Ventura County
+##Anacapa Island, Ventura County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.043200, lon=-119.471390), bottom_right=list(lat=33.973352, lon=-119.317977)))
 
-#Santa Cruz Island, Santa Barbara County
+##Santa Cruz Island, Santa Barbara County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
 
-#Santa Rosa Island, Santa Barbara County
+##Santa Rosa Island, Santa Barbara County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.066196, lon=-120.251608), bottom_right=list(lat=33.879497, lon=-119.954113)))
 
-#Santa Barbara Island, Santa Barbara County
+##Santa Barbara Island, Santa Barbara County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.494456, lon=-119.061826), bottom_right=list(lat=33.456352, lon=-119.010264)))
 
-#San Miguel Island, Santa Barbara County
+##San Miguel Island, Santa Barbara County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.093612, lon=-120.494533), bottom_right=list(lat=33.983255, lon=-120.286866)))
 
-#San Nicholas Island, Ventura County
+##San Nicholas Island, Ventura County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.305983, lon=-119.583882), bottom_right=list(lat=33.197401, lon=-119.416234)))
 
-#Santa Catalina Island, Los Angeles County
+##Santa Catalina Island, Los Angeles County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.527942, lon=-118.643121), bottom_right=list(lat=33.259973, lon=-118.267602)))
 
-#San Clemente Island, Los Angeles County
+##San Clemente Island, Los Angeles County
 #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.053354, lon=-118.640136), bottom_right=list(lat=32.757320, lon=-118.314609)))
 
 
@@ -42,7 +42,7 @@ library(ridigbio)
 setwd("/Library/WebServer/Documents/ChannelIslandsVascularPlants")
 
 #read tab delimited file with headers
-vascular_plants <- read.delim("ChannelIslandsFlora-speciesTEST.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t", quote = "\"")
+vascular_plants <- read.delim("ChannelIslandsFlora-species.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t", quote = "\"")
 
 #create a unique list
 vascular_plants <- unique(vascular_plants)
@@ -54,7 +54,8 @@ nrow(vascular_plants)
 head(vascular_plants)
 
 #name the CSV based on island and taxa
-title <- paste("island2",'.tsv',sep="")
+#change for new output file name for each island
+title <- paste("output/san_clemente_island_vascular_plants",'.tsv',sep="")
 
 #add column names
 alldf <- data.frame('family','genus','specificepithet','stateprovince','county','locality','uuid', 'count')
@@ -67,7 +68,8 @@ for (x in vascular_plants$id){
   sE <- subsetHosts$specificepithet
   
   #query on island geopoint
-  query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
+  #change with new bounding box for each island
+  query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.053354, lon=-118.640136), bottom_right=list(lat=32.757320, lon=-118.314609)))
   
   #get specific fields from idigbio
   df <- idig_search_records(rq=query,fields = c('family','genus','specificepithet','stateprovince','county','locality','uuid'))

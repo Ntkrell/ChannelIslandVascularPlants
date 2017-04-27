@@ -1,13 +1,32 @@
 #########requirements##############
 #list of genus, species names query idigbio
-#limit by channel island, wildcard search
-#Santa Cruz Island, Santa Barbara County
+#limit by lat/long bounding box
+
 #Anacapa Island, Ventura County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.043200, lon=-119.471390), bottom_right=list(lat=33.973352, lon=-119.317977)))
+
+#Santa Cruz Island, Santa Barbara County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
+
+#Santa Rosa Island, Santa Barbara County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.066196, lon=-120.251608), bottom_right=list(lat=33.879497, lon=-119.954113)))
+
 #Santa Barbara Island, Santa Barbara County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.494456, lon=-119.061826), bottom_right=list(lat=33.456352, lon=-119.010264)))
+
 #San Miguel Island, Santa Barbara County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.093612, lon=-120.494533), bottom_right=list(lat=33.983255, lon=-120.286866)))
+
 #San Nicholas Island, Ventura County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.305983, lon=-119.583882), bottom_right=list(lat=33.197401, lon=-119.416234)))
+
 #Santa Catalina Island, Los Angeles County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.527942, lon=-118.643121), bottom_right=list(lat=33.259973, lon=-118.267602)))
+
 #San Clemente Island, Los Angeles County
+#query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=33.053354, lon=-118.640136), bottom_right=list(lat=32.757320, lon=-118.314609)))
+
+
 #counts by species, filtered by island name
 ######################
 #kseltmann (enicospilus@gmail.com) April 2017
@@ -39,32 +58,14 @@ for (x in vascular_plants$id){
   subsetHosts <- subset(vascular_plants, id == x)
   g <- subsetHosts$genus
   sE <- subsetHosts$specificepithet
-  sT <- "California"
-  cO <- "Santa Barbara"
-  loc <- "San Miguel"
-  
-  query <- list(genus=g,specificepithet=sE,stateProvince=sT,county=cO,locality=loc)
-}
-
-query <- list("verbatimlocality"=list("type"="exists"), "verbatimlocality"="san miguel island")
-  df <- idig_search_records(rq=query,limit=10)
-head(df)
-??idig_search
-??idig_search_records
-
-  #no georeference remarks? or establishmentMeans?
-  allHosts <- rq[c("uuid","institutioncode","catalognumber","locality","geopoint.lat","geopoint.lon","country","stateprovince","county","municipality","coordinateuncertainty","family","genus","specificepithet","infraspecificepithet","scientificname")]
-  
-  #colnames(allHosts) <- c("coreid","institutioncode","catalogNumber","locality", "decimalLatitude", "decimalLongitude", "country", "stateProvince", "county", "municipality","coordinateUncertaintyInMeters","family","genus","specificEpithet","infraspecificEpithet","scientificName")
-  
-  title <- paste(g,"_",sE,'.tsv',sep="")
-  
-  #create a separate file for each genus/species
-  write.table(allHosts, file=title, sep="\t", append = FALSE , row.names = FALSE, col.names = FALSE, qmethod = "double")
+  query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
+  df <- idig_search_records(rq=query,fields = c('family','genus','specificepithet','stateprovince','county','locality','uuid'))
   
   #create one giant file
-  write.table(allHosts, file="all.tsv", sep="\t", append = TRUE , row.names = FALSE, col.names = FALSE)
+  write.table(df, file="all.tsv", sep="\t", append = TRUE , row.names = F, col.names = F)
 }
+
+??write.table
 
 #insert into mysql database using load data all.tsv
 
@@ -77,6 +78,7 @@ head(df)
 
 #returns all searchable fields
 idig_meta_fields()
+idig_view_records()
 
 #find all functions in package
 lsp <- function(package, all.names = FALSE, pattern) 
@@ -91,4 +93,3 @@ lsp <- function(package, all.names = FALSE, pattern)
 
 lsp(ridigbio)
 
-idig_meta_fields

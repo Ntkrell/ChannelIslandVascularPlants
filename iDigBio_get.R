@@ -53,22 +53,43 @@ nrow(vascular_plants)
 #check output
 head(vascular_plants)
 
-#creates separate spreadsheet for all genus species in tab delimited list
+#name the CSV based on island and taxa
+title <- paste("island2",'.tsv',sep="")
+
+#add column names
+alldf <- data.frame('family','genus','specificepithet','stateprovince','county','locality','uuid', 'count')
+write.table(alldf, file=title, sep="\t", append = TRUE , row.names = F, col.names = F)
+
+#creates spreadsheet for all rows in delimited text file
 for (x in vascular_plants$id){
   subsetHosts <- subset(vascular_plants, id == x)
   g <- subsetHosts$genus
   sE <- subsetHosts$specificepithet
+  
+  #query on island geopoint
   query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
+  
+  #get specific fields from idigbio
   df <- idig_search_records(rq=query,fields = c('family','genus','specificepithet','stateprovince','county','locality','uuid'))
   
-  #query <- list(genus=g,specificepithet=sE,geopoint=list(type="geo_bounding_box", top_left=list(lat=34.103252, lon=-119.943268), bottom_right=list(lat=33.882060, lon=-119.510982)))
-  #df <- c(idig_count_records(rq=query),g,sE)
+  #count the number of rows in return
+  dfcount <- nrow(df)
+  
+  #get specimen counts
+  dc <- c(idig_count_records(rq=query))
+  
+  #create a rep of specimen counts
+  spcounts <- rep(dc, dfcount)
+  
+  #create a merged data frame with counts
+  alldf <- data.frame(df,spcounts)
   
   #create one giant file
-  write.table(df, file="all.tsv", sep="\t", append = TRUE , row.names = F, col.names = F)
+  write.table(alldf, file=title, sep="\t", append = TRUE , row.names = F, col.names = F)
 }
 
-??write.table
+
+
 
 #insert into mysql database using load data all.tsv
 

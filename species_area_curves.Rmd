@@ -1,0 +1,104 @@
+---
+title: "Week 5: Species Area Curves"
+author: "G167 Biogeography"
+date: "5/3/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installing RMarkdown
+If you have not done so already, you will need to run the following lines in your RStudio console in order to use this RMarkdown script. 
+
+```{r eval=FALSE}
+pckg <- c("knitr", "rmarkdown") 
+install.packages(pckg) # install packages 
+lapply(pckg, library, character.only = TRUE) # load packages
+```
+
+## Background
+
+The Species-Area relationship, $S = cA^z$, is a power function where $A$ is the area of the region, $S$ is the number of species present (species richness) of the region, and $c$ and $z$ are site- and taxonomic-specific constants determined by the dataset. These constants can dramatically change the shape of the species-area curve and yet are difficult to explain biologically since they vary depending on the region and the type of organisms being described.
+
+Given actual data on species richness $S$ and area $A$, how do you find the equation for the species-area curve? The key to finding the values of $c$ and $z$ that best fit the data is in the law of logarithms. By taking the logarithm of the power model $S = cA^z$ one finds:
+
+
+$$ \log S = \log(cA^z) $$
+$$ \log S = \log c + \log A^z $$
+$$ \log S = z \log A + \log c$$
+
+The former power model is now described as a line similar to a linear model like $y = mx + b$ which you may already be familiar with. In the case of the species-area relationship, the constant $z$ is the slope, $\log c$ is the intercept, $\log A$ is the independent variable (x-axis) and $\log S$ is the dependent variable (y-axis).
+
+## R Code 
+We will use three datasets: two papers on avifaunal diversity in the Channel Islands (Diamond 1969) and Soloman Archipelago (Diamond & Mayr 1976) and a dataset provided by CCBER on vascular plants found on the Channel Islands. The following code generates the species-area curve and the corresponding log-log plots for the oceanic bird data (Diamond & Mayr 1976).
+
+To import the data, set your working directory to wherever you've stored the folder from gauchospace. This may be in your Downloads folder if you just downloaded the data. The "~" (tilda) indicates your home directory, and the "/" creates the path to "Downloads". If you can not get the `setwd()` command to work, you can set your working directory manually by going to Session --> Set Working Directory --> Choose Directory.
+
+```{r}
+#setwd("~/Downloads/species-area")
+data <- read.csv("Diamond1976_Table1.csv",header=T,sep=",")
+```
+
+```{r}
+## Start by taking a look at the Diamond (1976) data 
+head(data) # reads the first few rows of the dataset 
+summary(data) # gives a summary (mean, max, min, etc.) of each column in the dataset
+median(data$S_low) # $ is 'string';  Data String S_low
+max(data$S_low)
+sd(data$S_low)
+
+# Make the first species-area curve
+Area <- data$A_mi2
+Slow <- data$S_low
+plot(Area, Slow, xlab = "Area (mi^2)",
+     ylab = "Species Richness",
+     pch = 15, cex = 1, col = "skyblue")
+
+# Take the logarithm of the data
+data$logS_low = log(data$S_low)
+data$logS_mt = log(data$S_mt)
+data$logA = log(data$A_mi2)
+
+# Log plot
+plot(data$logA, data$logS_low, xlab = "Log area",
+     ylab = "Log species richness", main = "Log-log plot Diamond (1976)",
+     pch = 15, cex = 1, col = "skyblue")
+fit <- lm(data$logS_low ~ data$logA) # tilda is "explained by"
+abline(fit)
+summary(fit)
+fit$coefficients
+```
+
+Repeat the process for the CCBER data and the Diamond (1969) data.
+
+## CCBER
+```{r}
+
+```
+
+## Diamond (1969)
+```{r}
+
+```
+
+## Assignment
+Your assignment due next Thursday is to plot the species-area curves and log-log plots for the CCBER and Diamond (1969) data. To do this, import the datasets with the `read.csv` function and repeat the remaining steps.
+
+Make accurate and coherent graphs with useful titles (set the argument `main="some title"`) and write-up your responses to the following questions. Be sure to check that your units for island area is consistent. If you feel good about R, try adding the $R^2$ value next to the regression line. 
+
+1. What do the species-area plots for the CCBER and Diamond (1969) datasets look like? Are they different from the Diamond (1976) example we plotted in class? Why might this be the case?
+
+2. Compare the log-log plots for the three datasets. What are the values for the $c$ and $z$ constants for each model? Which result has the highest correlation between log-area and log-species? What might be driving the differences in $R^2$ values?
+
+3. **Extra Credit** Take a look at the distance, extinctions, and immigrations data from Table 1 in the Diamond (1969) paper. Rank the islands according to their extinction and immigration rates. Plot these rates against size of the island (area) and distance from the mainland. Do these linear relationships make sense given what you have learned so far about island biogeography? Think about island size and distance from the mainland, and how these numbers relate to turnover rates. Which factor appears to be the most important in determining patterns of species turnover?
+
+You can either: 1) turn in a document with the figures and answers to the questions **_or_** 2) type your responses directly into this .Rmd file and upload the output html or PDF file onto Gauchospace. To export this document directly as a PDF you will need to have latex installed on your machine and then change line 5 to: `output: pdf_document`. It's also fine to just upload the html file onto gauchospace.
+
+## References
+Diamond, J. (1969). Avifaunal equilibria and species turnover rates on the Channel Islands of California. _Proceedings of the National Academy of Sciences of the United States of America_, 64:57-63.
+
+Diamond, J. and Mayr, E. (1976). Species-area relation for birds of the Solomon Archipelago. _Proceedings of the National Academy of Sciences of the United States of America_, 73:262-266.
+
+Seltmann, K. (2017). Channel island vascular plants. https://github.com/seltmann/ChannelIslandVascularPlants.
